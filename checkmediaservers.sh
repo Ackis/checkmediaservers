@@ -25,6 +25,8 @@ NC="\033[0m" # No Color
 GREEN="\033[0;32m"
 NMAKEY="adfd0c0ccc32ffc5d558307a71fc946ae4a921e6572e1c80"
 
+# Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
+
 logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
 echo "${INTROMESSAGE}"
 
