@@ -9,22 +9,7 @@ GREEN="\033[0;32m"
 
 if [ ! -f services ]; then
 	SERVICES=(
-		"ArchiSteamFarm"
-		"calibre"
-		"sabnzbdplus"
-		"minecraft"
-		"mylar"
 		"nginx"
-		"ombi"
-		"plexpy"
-		"plexmediaserver"
-		"radarr"
-		"sonarr"
-		"starbound"
-		"transmission"
-		"ubooquity"
-		"znc"
-#		"zoneminder"
 	)
 else
 	readarray -t SERVICES < services
