@@ -3,9 +3,9 @@
 # Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
 
 INTROMESSAGE="Checking run state of media/game servers."
-RED="\033[0;31m"
-NC="\033[0m" # No Color
-GREEN="\033[0;32m"
+RED="\\033[0;31m"
+NC="\\033[0m" # No Color
+GREEN="\\033[0;32m"
 
 if [ ! -f services ]; then
 	SERVICES=(
@@ -26,7 +26,7 @@ logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
 echo "${INTROMESSAGE}"
 
 for index in "${!SERVICES[@]}"; do
-	if (( $(ps -ef | grep -v grep | grep "${SERVICES[index]}" | wc -l) > 0 ))
+	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
 		echo -e "${SERVICES[index]} running: ${GREEN}PASS${NC}"
 		logger -t MediaServers -p syslog.notice "${SERVICES[index]} is running."
