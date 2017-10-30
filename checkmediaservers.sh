@@ -2,7 +2,6 @@
 SERVICES=(
 	"ArchiSteamFarm"
 	"calibre"
-	"couchpotato"
 	"sabnzbdplus"
 	"minecraft"
 	"mylar"
@@ -10,6 +9,7 @@ SERVICES=(
 	"ombi"
 	"plexpy"
 	"plexmediaserver"
+	"radarr"
 	"sonarr"
 	"starbound"
 	"transmission"
@@ -31,13 +31,6 @@ logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
 echo "${INTROMESSAGE}"
 
 for index in "${!SERVICES[@]}"; do
-	#echo "Checking on ${SERVICES[index]}."
-	#logger -t MediaServers -p syslog.notice "Checking on ${SERVICES[index]}."
-
-	#service_status='stopped'
-	#service ${SERVICES[index]} status &>/dev/null && service_status='running'
-	#echo "${SERVICES[index]} is ${service_status}"
-
 	if (( $(ps -ef | grep -v grep | grep "${SERVICES[index]}" | wc -l) > 0 ))
 	then
 		echo -e "${SERVICES[index]} running: ${GREEN}PASS${NC}"
