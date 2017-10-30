@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ ~ -f netflixkey ]; then
-	echo "No Netflix Key"
+if [ ! -f plextoken ]; then
+	echo "No Plex Token"
 	exit 1
 else
-	readarry -t NETFLIXKEY < netflixkey
+	readarray -t PLEXTOKEN < plextoken
 fi
 
-plex2netflix -t "${NETFLIXKEY}" --country ca
+plex2netflix -t "${PLEXTOKEN}" --country ca
