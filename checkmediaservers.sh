@@ -7,19 +7,21 @@ RED="\\033[0;31m"
 NC="\\033[0m" # No Color
 GREEN="\\033[0;32m"
 
-if [ ! -f services ]; then
+MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [ ! -f "${MY_PATH}/services" ]; then
 	SERVICES=(
 		"nginx"
 	)
 else
-	readarray -t SERVICES < services
+	readarray -t SERVICES < "${MY_PATH}/services"
 fi
 
-if [ ! -f nmakey ]; then
+if [ ! -f "${MY_PATH}/nmakey" ]; then
 	echo "No NMA Key"
 	NMAKEY=""
 else
-	NMAKEY=$(head -n 1 nmakey)
+	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
 fi
 
 logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
