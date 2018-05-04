@@ -64,10 +64,23 @@ fi
 # Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
 
 if [ -f "${MY_PATH}/nmakey" ]; then
+	if [ "${VERBOSE}" = true ] ; then
+		echo "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
+		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
+	fi
 	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
 elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
+	if [ "${VERBOSE}" = true ] ; then
+		echo "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
+		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
+	fi
+
 	NMAKEY=$(head -n 1 "${SCRIPT_HOME}/nmakey")
 else
+	if [ "${VERBOSE}" = true ] ; then
+		echo "${SCRIPT_NAME}: No nma key found. Not using nma."
+		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: No nma key found. Not using nma."
+	fi
 	echo "No NMA Key"
 	NMAKEY=""
 fi
