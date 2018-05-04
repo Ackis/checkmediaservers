@@ -25,12 +25,15 @@ else
 fi
 
 function display_help() {
-	echo "Help TBD"
+	echo "Help WIP"
+	echo "-n|--usenma:		Use NMA to send notifications (NYI)"
+	echo "-v|--verbose:		Verbose mode"
+	echo "-h|--help:		Display help"
 }
 
 # Command line parameters:
-#	-v:		Verbose mode
-#	-h:		Display help
+#	-v|--verbose:		Verbose mode
+#	-h|--help:		Display help
 while [[ $# -gt 0 ]]
 do
 	key="$1"
