@@ -27,12 +27,26 @@ function display_help() {
 }
 
 function print_and_log() {
-	if [ "${VERBOSE}" = true ] ; then
-		echo "$1"
+	# If we weren't passed an argument, fail.
+	if [ -z "${1}" ] ; then
+		echo "Error: No parameter passed to print_and_log. Function needs at least one string."
+		return 1
 	fi
 
+	# If verbose is enabled, spout more text.
+	if [ "${VERBOSE}" = true ] ; then
+		# We can assume we have an argument here
+		echo "${1}"
+	fi
+
+	# Do we want to log?
 	if [ "${LOG}" = true ] ; then
-		logger -t MediaServers -p syslog.debug "$1"
+		# Were we passed a second argmument?
+		if [ ! -z "${2}" ] ; then
+			logger -t MediaServers -p "syslog.${2}" "${1}"
+		else
+			logger -t MediaServers -p syslog.debug "$1"
+		fi
 	fi
 }
 
@@ -70,13 +84,13 @@ done
 # If we haven't found it, just check for nginx.
 
 if [ -f "${MY_PATH}/services" ]; then
-	print_and_log "${SCRIPT_NAME}: services file found at ${MY_PATH}/services."
+	print_and_log "${SCRIPT_NAME}: services file found at ${MY_PATH}/services." "debug"
         readarray -t SERVICES < "${MY_PATH}/services"
 elif [ -f "${SCRIPT_HOME}/services" ]; then
-	print_and_log "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services."
+	print_and_log "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services." "debug"
         readarray -t SERVICES < "${SCRIPT_HOME}/services"
 else
-	print_and_log "${SCRIPT_NAME}: no services file found, using default."
+	print_and_log "${SCRIPT_NAME}: no services file found, using default." "debug"
 	SERVICES=(
 		"nginx"
 	)
@@ -87,13 +101,13 @@ fi
 
 if [ -f "${MY_PATH}/nmakey" ]; then
 	print_and_log "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
-	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
+	NMA_KEY=$(head -n 1 "${MY_PATH}/nmakey")
 elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
 	print_and_log "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
-	NMAKEY=$(head -n 1 "${SCRIPT_HOME}/nmakey")
+	NMA_KEY=$(head -n 1 "${SCRIPT_HOME}/nmakey")
 else
 	print_and_log "${SCRIPT_NAME}: No nma key found. Not using nma."
-	NMAKEY=""
+	NMA_KEY=""
 	USE_NMA=false
 fi
 
@@ -114,12 +128,17 @@ for index in "${!SERVICES[@]}"; do
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
 		echo -e "${SERVICES[index]} running: ${GREEN}PASS${NC}"
-		print_and_log "${SERVICES[index]} is running."
+		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is running." "info"
 	else
 		echo -e "${SERVICES[index]} running: ${RED}FAIL${NC}"
-		logger -p syslog.error "${SERVICES[index]} is NOT running."
+		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is NOT running." "alert"
+
 		if [ "${USE_NMA}" = true ] ; then
-			echo '/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."'
+			NMA_CMD="\"MediaServers\" ${SERVICES[index]} \"${SERVICES[index]} is not running.\""
+			# For some reason the script errors out if I put all of that on one line.
+			print_and_log "${SCRIPT_NAME}: Calling NMA: ${NMA_CMD}" "debug"
+			# NMA script errors out if I pass NMA_CMD to it.
+			/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."
 		fi
 	fi
 
