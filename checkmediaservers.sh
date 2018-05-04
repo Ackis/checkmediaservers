@@ -12,6 +12,7 @@ RED="\\033[0;31m"
 NC="\\033[0m" # No Color
 GREEN="\\033[0;32m"
 SCRIPT_NAME="$0"
+MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Display extra logging info
 VERBOSE=false
@@ -23,15 +24,16 @@ else
 	USE_NMA=false
 fi
 
+function display_help() {
+	echo "Help TBD"
+}
+
 # Command line parameters:
 #	-v:		Verbose mode
 #	-h:		Display help
-MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 while [[ $# -gt 0 ]]
 do
 	key="$1"
-echo $key
 	case $key in
 		-v | --verbose )
 			VERBOSE=true
@@ -39,7 +41,7 @@ echo $key
 			echo "Verbose mode enabled."
 			;;
 		-h | --help )
-			echo "Help TBD"
+			display_help
 			exit 2
 			;;
 		* )
