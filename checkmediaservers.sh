@@ -51,7 +51,7 @@ fi
 if [ -f "${MY_PATH}/nmakey" ]; then
 	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
 elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
-	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
+	NMAKEY=$(head -n 1 "${SCRIPT_HOME}/nmakey")
 else
 	echo "No NMA Key"
 	NMAKEY=""
