@@ -17,26 +17,35 @@ SCRIPT_NAME="$0"
 VERBOSE=false
 
 # Do we want to use nma?
-NMA=FALSE
+if [ -f "${NMA_SCRIPT}" ]; then
+	USE_NMA=true
+else
+	USE_NMA=false
+fi
 
 # Command line parameters:
 #	-v:		Verbose mode
 #	-h:		Display help
 MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-while [ "$1" != "" ]; do
-	case $1 in
-		-v | --verbose )		shift
-						VERBOSE=true
-						echo "Verbose mode enabled."
-						;;
-		-h | --help )			echo "Help TBD"
-						exit
-						;;
-		* )				shift
-						VERBOSE=false
+while [[ $# -gt 0 ]]
+do
+	key="$1"
+echo $key
+	case $key in
+		-v | --verbose )
+			VERBOSE=true
+			shift
+			echo "Verbose mode enabled."
+			;;
+		-h | --help )
+			echo "Help TBD"
+			exit 2
+			;;
+		* )
+			VERBOSE=false
+			shift
 	esac
-	shift
 done
 
 # Read in the list of services from the services file.
