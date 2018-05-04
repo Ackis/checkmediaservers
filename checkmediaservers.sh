@@ -16,6 +16,8 @@ MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Display extra logging info
 VERBOSE=false
+USE_NMA=false
+LOG=true
 
 # Do we want to use nma?
 if [ -f "${NMA_SCRIPT}" ]; then
@@ -31,9 +33,19 @@ function display_help() {
 	echo "-h|--help:		Display help"
 }
 
+function print_and_log() {
+	if [ "${VERBOSE}" = true ] ; then
+		echo "$1"
+	fi
+	if [ "${LOG}" = true ] ; then
+		logger -t MediaServers -p syslog.debug "$1"
+	fi
+}
+
 # Command line parameters:
 #	-v|--verbose:		Verbose mode
 #	-h|--help:		Display help
+#	-n|--usenma:		Use NMA.
 while [[ $# -gt 0 ]]
 do
 	key="$1"
@@ -47,6 +59,11 @@ do
 			display_help
 			exit 2
 			;;
+		-n | --usenma )
+			USE_NMA=true
+			echo "Using NMA to send notifications."
+			shift
+			;;
 		* )
 			VERBOSE=false
 			shift
@@ -59,23 +76,13 @@ done
 # If we haven't found it, just check for nginx.
 
 if [ -f "${MY_PATH}/services" ]; then
-	if [ "${VERBOSE}" = true ] ; then
-		echo "${SCRIPT_NAME}: services file found at ${MY_PATH}/services."
-		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: services file found at ${MY_PATH}/services."
-	fi
+	print_and_log "${SCRIPT_NAME}: services file found at ${MY_PATH}/services."
         readarray -t SERVICES < "${MY_PATH}/services"
 elif [ -f "${SCRIPT_HOME}/services" ]; then
-	if [ "${VERBOSE}" = true ] ; then
-		echo "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services."
-		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services."
-	fi
+	print_and_log "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services."
         readarray -t SERVICES < "${SCRIPT_HOME}/services"
 else
-	if [ "${VERBOSE}" = true ] ; then
-		echo "${SCRIPT_NAME}: no services file found, using default."
-		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: no services file found, using default."
-	fi
-
+	print_and_log "${SCRIPT_NAME}: no services file found, using default."
 	SERVICES=(
 		"nginx"
 	)
@@ -85,24 +92,13 @@ fi
 # Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
 
 if [ -f "${MY_PATH}/nmakey" ]; then
-	if [ "${VERBOSE}" = true ] ; then
-		echo "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
-		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
-	fi
+	print_and_log "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
 	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
 elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
-	if [ "${VERBOSE}" = true ] ; then
-		echo "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
-		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
-	fi
-
+	print_and_log "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
 	NMAKEY=$(head -n 1 "${SCRIPT_HOME}/nmakey")
 else
-	if [ "${VERBOSE}" = true ] ; then
-		echo "${SCRIPT_NAME}: No nma key found. Not using nma."
-		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: No nma key found. Not using nma."
-	fi
-	echo "No NMA Key"
+	print_and_log "${SCRIPT_NAME}: No nma key found. Not using nma."
 	NMAKEY=""
 fi
 
@@ -112,22 +108,15 @@ echo "${INTROMESSAGE}"
 for index in "${!SERVICES[@]}"; do
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
-		# Print out the service with a green pass.
 		echo -e "${SERVICES[index]} running: ${GREEN}PASS${NC}"
-		# If we've selected verbose output, log the passing services to syslog.
-		if [ "$VERBOSE" = true ] ; then
-			logger -t MediaServers -p syslog.notice "${SERVICES[index]} is running."
-		fi
+		print_and_log "${SERVICES[index]} is running."
 	else
-		# Print out the service with a red fail beside it, and then log it to our syslog error log.
 		echo -e "${SERVICES[index]} running: ${RED}FAIL${NC}"
 		logger -p syslog.error "${SERVICES[index]} is NOT running."
-		# If we have a Notify My Android key, send a notification.
-		if [ -z "$NMAKEY" ];
-		then
-			echo "No NMA key, skipping notification."
-		else
+		if [ "${USE_NMA}" = true ] ; then
 			echo '/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."'
+		else
+			echo "No NMA key, skipping notification."
 		fi
 	fi
 
