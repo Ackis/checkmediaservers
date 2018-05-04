@@ -7,9 +7,10 @@ RED="\\033[0;31m"
 NC="\\033[0m" # No Color
 GREEN="\\033[0;32m"
 SCRIPT_HOME="/opt/scripts/mediaservers"
+SCRIPT_NAME="$0"
 
 # Display extra logging info
-VERBOSE=FALSE
+VERBOSE=false
 
 # Command line parameters:
 #	-v:		Verbose mode
@@ -19,14 +20,14 @@ MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 while [ "$1" != "" ]; do
 	case $1 in
 		-v | --verbose )		shift
-						VERBOSE=TRUE
+						VERBOSE=true
 						echo "Verbose mode enabled."
 						;;
 		-h | --help )			echo "Help TBD"
 						exit
 						;;
 		* )				shift
-						VERBOSE=FALSE
+						VERBOSE=false
 	esac
 	shift
 done
@@ -35,11 +36,25 @@ done
 # Check the directory where the script is being run for the file.
 # Then check the default directory for the file.
 # If we haven't found it, just check for nginx.
+
 if [ -f "${MY_PATH}/services" ]; then
+	if [ "${VERBOSE}" = true ] ; then
+		echo "${SCRIPT_NAME}: services file found at ${MY_PATH}/services."
+		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: services file found at ${MY_PATH}/services."
+	fi
         readarray -t SERVICES < "${MY_PATH}/services"
 elif [ -f "${SCRIPT_HOME}/services" ]; then
+	if [ "${VERBOSE}" = true ] ; then
+		echo "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services."
+		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services."
+	fi
         readarray -t SERVICES < "${SCRIPT_HOME}/services"
 else
+	if [ "${VERBOSE}" = true ] ; then
+		echo "${SCRIPT_NAME}: no services file found, using default."
+		logger -t MediaServers -p syslog.debug "${SCRIPT_NAME}: no services file found, using default."
+	fi
+
 	SERVICES=(
 		"nginx"
 	)
@@ -66,7 +81,7 @@ for index in "${!SERVICES[@]}"; do
 		# Print out the service with a green pass.
 		echo -e "${SERVICES[index]} running: ${GREEN}PASS${NC}"
 		# If we've selected verbose output, log the passing services to syslog.
-		if [ "$VERBOSE" = TRUE ] ; then
+		if [ "$VERBOSE" = true ] ; then
 			logger -t MediaServers -p syslog.notice "${SERVICES[index]} is running."
 		fi
 	else
