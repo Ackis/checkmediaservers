@@ -46,11 +46,15 @@ else
 fi
 
 # Read in your Notify My Android key from the nmakey file.
-if [ ! -f "${MY_PATH}/nmakey" ]; then
+# Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
+
+if [ -f "${MY_PATH}/nmakey" ]; then
+	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
+elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
+	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
+else
 	echo "No NMA Key"
 	NMAKEY=""
-else
-	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
 fi
 
 logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
