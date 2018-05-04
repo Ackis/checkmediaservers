@@ -13,6 +13,26 @@ VERBOSE=FALSE
 
 MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-v | --verbose )		shift
+						VERBOSE=TRUE
+						echo "Verbose mode enabled."
+						;;
+		-h | --help )			echo "Help TBD"
+						exit
+						;;
+		* )				shift
+						VERBOSE=FALSE
+	esac
+	shift
+done
+
+
+
+
 # Read in the list of services from the services file.
 # Check the directory where the script is being run for the file.
 # Then check the default directory for the file.
@@ -34,20 +54,6 @@ if [ ! -f "${MY_PATH}/nmakey" ]; then
 else
 	NMAKEY=$(head -n 1 "${MY_PATH}/nmakey")
 fi
-
-while [ "$1" != "" ]; do
-	case $1 in
-		-v | --verbose )		shift
-						VERBOSE=TRUE
-						;;
-		-h | --help )			echo "Help"
-						exit
-						;;
-		* )				shift
-						VERBOSE=FALSE
-	esac
-	shift
-done
 
 logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
 echo "${INTROMESSAGE}"
