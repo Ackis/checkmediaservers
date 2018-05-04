@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
 
+# These are the only variables you should need to change to customize your script
+# Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
 INTROMESSAGE="Checking run state of media/game servers."
+SCRIPT_HOME="/opt/scripts/mediaservers"
+NMA_SCRIPT="/opt/scripts/notifymyandroid/nma.sh"
+
+# Constants used within the script.
 RED="\\033[0;31m"
 NC="\\033[0m" # No Color
 GREEN="\\033[0;32m"
-SCRIPT_HOME="/opt/scripts/mediaservers"
 SCRIPT_NAME="$0"
 
 # Display extra logging info
 VERBOSE=false
+
+# Do we want to use nma?
+NMA=FALSE
 
 # Command line parameters:
 #	-v:		Verbose mode
