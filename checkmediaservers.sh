@@ -6,6 +6,7 @@ INTROMESSAGE="Checking run state of media/game servers."
 RED="\\033[0;31m"
 NC="\\033[0m" # No Color
 GREEN="\\033[0;32m"
+SCRIPT_HOME="/opt/scripts/mediaservers"
 
 # Display extra logging info
 VERBOSE=FALSE
@@ -13,13 +14,18 @@ VERBOSE=FALSE
 MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Read in the list of services from the services file.
-# If it doesn't exist, we'll just check for nginx
-if [ ! -f "${MY_PATH}/services" ]; then
-	SERVICES=(
-		"nginx"
-	)
-else
+
+# Check to see if the services file is in the same directory as the script.
+if [ -f "${MY_PATH}/services" ]; then
 	readarray -t SERVICES < "${MY_PATH}/services"
+# Check to see if the services file is in my default script directory.
+else if [ -f "${SCRIPT_HOME}/services" ]; then
+	readarray -t SERVICES < "${SCRIPT_HOME}/services"
+# We can't find any service files so lets just check for nginx.
+else
+	SERVICES={
+		"nginx"
+	}
 fi
 
 # Read in your Notify My Android key from the nmakey file.
@@ -65,7 +71,7 @@ for index in "${!SERVICES[@]}"; do
 		then
 			echo "No NMA key, skipping notification."
 		else
-			/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."
+			echo '/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."'
 		fi
 	fi
 
