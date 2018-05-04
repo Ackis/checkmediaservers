@@ -11,9 +11,10 @@ SCRIPT_HOME="/opt/scripts/mediaservers"
 # Display extra logging info
 VERBOSE=FALSE
 
+# Command line parameters:
+#	-v:		Verbose mode
+#	-h:		Display help
 MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-
 
 while [ "$1" != "" ]; do
 	case $1 in
@@ -29,9 +30,6 @@ while [ "$1" != "" ]; do
 	esac
 	shift
 done
-
-
-
 
 # Read in the list of services from the services file.
 # Check the directory where the script is being run for the file.
