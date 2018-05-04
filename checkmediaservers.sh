@@ -14,18 +14,17 @@ VERBOSE=FALSE
 MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Read in the list of services from the services file.
-
-# Check to see if the services file is in the same directory as the script.
+# Check the directory where the script is being run for the file.
+# Then check the default directory for the file.
+# If we haven't found it, just check for nginx.
 if [ -f "${MY_PATH}/services" ]; then
-	readarray -t SERVICES < "${MY_PATH}/services"
-# Check to see if the services file is in my default script directory.
-else if [ -f "${SCRIPT_HOME}/services" ]; then
-	readarray -t SERVICES < "${SCRIPT_HOME}/services"
-# We can't find any service files so lets just check for nginx.
+        readarray -t SERVICES < "${MY_PATH}/services"
+elif [ -f "${SCRIPT_HOME}/services" ]; then
+        readarray -t SERVICES < "${SCRIPT_HOME}/services"
 else
-	SERVICES={
+	SERVICES=(
 		"nginx"
-	}
+	)
 fi
 
 # Read in your Notify My Android key from the nmakey file.
