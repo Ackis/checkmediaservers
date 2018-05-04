@@ -19,13 +19,6 @@ VERBOSE=false
 USE_NMA=false
 LOG=true
 
-# Do we want to use nma?
-if [ -f "${NMA_SCRIPT}" ]; then
-	USE_NMA=true
-else
-	USE_NMA=false
-fi
-
 function display_help() {
 	echo "Help WIP"
 	echo "-n|--usenma:		Use NMA to send notifications (NYI)"
@@ -37,6 +30,7 @@ function print_and_log() {
 	if [ "${VERBOSE}" = true ] ; then
 		echo "$1"
 	fi
+
 	if [ "${LOG}" = true ] ; then
 		logger -t MediaServers -p syslog.debug "$1"
 	fi
@@ -61,8 +55,8 @@ do
 			;;
 		-n | --usenma )
 			USE_NMA=true
-			echo "Using NMA to send notifications."
 			shift
+			echo "Using NMA to send notifications."
 			;;
 		* )
 			VERBOSE=false
@@ -100,10 +94,21 @@ elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
 else
 	print_and_log "${SCRIPT_NAME}: No nma key found. Not using nma."
 	NMAKEY=""
+	USE_NMA=false
 fi
 
-logger -t MediaServers -p syslog.info "${INTROMESSAGE}"
-echo "${INTROMESSAGE}"
+print_and_log "${INTROMESSAGE}"
+
+# Do we want to use nma?
+if [ "${USE_NMA}" = true ] ; then
+	if [ -f "${NMA_SCRIPT}" ]; then
+		USE_NMA=true
+	else
+		print_and_log  "${SCRIPT_NAME}: No NMA key found, and option to send notifications is enabled. Not sending a notification."
+		USE_NMA=false
+	fi
+fi
+
 
 for index in "${!SERVICES[@]}"; do
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
@@ -115,8 +120,6 @@ for index in "${!SERVICES[@]}"; do
 		logger -p syslog.error "${SERVICES[index]} is NOT running."
 		if [ "${USE_NMA}" = true ] ; then
 			echo '/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."'
-		else
-			echo "No NMA key, skipping notification."
 		fi
 	fi
 
