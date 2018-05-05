@@ -129,6 +129,7 @@ fi
 for index in "${!SERVICES[@]}"; do
 	TEXT_LENGTH=${#SERVICES[index]}
 	printf "%s " "${SERVICES[index]}"
+	#systemctl status $1 | awk 'NR==3' | awk '{print $2}'
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
 		printf "%*.*s" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
@@ -149,5 +150,3 @@ for index in "${!SERVICES[@]}"; do
 	fi
 
 done
-
-#systemctl status $1 | awk 'NR==3' | awk '{print $2}'
