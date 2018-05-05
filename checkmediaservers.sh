@@ -8,6 +8,9 @@ SCRIPT_HOME="/opt/scripts/mediaservers"
 NMA_SCRIPT="/opt/scripts/notifymyandroid/nma.sh"
 
 # Constants used within the script.
+PAD_CHARACTER="." # What type of character do you want to use to pad output?
+PAD_LENGTH=60 # How much padding do you want?
+pad=$(printf "%0.1s" "${PAD_CHARACTER}"{1..60})
 RED="\\033[0;31m"
 NC="\\033[0m" # No Color
 GREEN="\\033[0;32m"
@@ -123,14 +126,17 @@ if [ "${USE_NMA}" = true ] ; then
 	fi
 fi
 
-
 for index in "${!SERVICES[@]}"; do
+	TEXT_LENGTH=${#SERVICES[index]}
+	printf "%s " "${SERVICES[index]}"
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
-		echo -e "${SERVICES[index]} running: ${GREEN}PASS${NC}"
+		printf "%*.*s" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
+		printf " [ $GREEN%b$NC ]\n" "PASS"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is running." "info"
 	else
-		echo -e "${SERVICES[index]} running: ${RED}FAIL${NC}"
+		printf "%*.*s" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
+		printf " [ $RED%b$NC ]\n" "FAIL"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is NOT running." "alert"
 
 		if [ "${USE_NMA}" = true ] ; then
@@ -143,3 +149,5 @@ for index in "${!SERVICES[@]}"; do
 	fi
 
 done
+
+#systemctl status $1 | awk 'NR==3' | awk '{print $2}'
