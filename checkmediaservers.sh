@@ -10,12 +10,22 @@ NMA_SCRIPT="/opt/scripts/notifymyandroid/nma.sh"
 # Constants used within the script.
 PAD_CHARACTER="." # What type of character do you want to use to pad output?
 PAD_LENGTH=60 # How much padding do you want?
+
 pad=$(printf "%0.1s" "${PAD_CHARACTER}"{1..60})
-RED="\\033[0;31m"
-NC="\\033[0m" # No Color
-GREEN="\\033[0;32m"
 SCRIPT_NAME="$0"
 MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+
+# Colours to use in the script
+BLK='\033[0;30m' # Black
+RED='\033[0;31m' # Red
+GRN='\033[0;32m' # Green
+BLU='\033[0;34m' # Blue
+CYA='\033[0;36m' # Cyan
+WHI='\033[0;37m' # White
+YEL='\033[0;33m' # Yellow
+PUR='\033[0;35m' # Purple
+NC="\\033[0m" # No Colour
 
 # Display extra logging info
 VERBOSE=false
@@ -132,11 +142,11 @@ for index in "${!SERVICES[@]}"; do
 	#systemctl status $1 | awk 'NR==3' | awk '{print $2}'
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
-		printf "%*.*s" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
-		printf " [ $GREEN%b$NC ]\n" "PASS"
+		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
+		printf " [ $GRN%b$NC ]\n" "PASS"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is running." "info"
 	else
-		printf "%*.*s" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
+		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
 		printf " [ $RED%b$NC ]\n" "FAIL"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is NOT running." "alert"
 
