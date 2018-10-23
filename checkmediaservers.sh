@@ -64,7 +64,7 @@ function print_and_log() {
 # Command line parameters:
 #	-v|--verbose:		Verbose mode
 #	-h|--help:		Display help
-#	-n|--usenma:		Use NMA.
+
 while [[ $# -gt 0 ]]
 do
 	key="$1"
