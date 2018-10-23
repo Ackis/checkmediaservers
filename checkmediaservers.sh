@@ -2,10 +2,8 @@
 
 
 # These are the only variables you should need to change to customize your script
-# Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
 INTROMESSAGE="Checking run state of media/game servers."
 SCRIPT_HOME="/opt/scripts/mediaservers"
-NMA_SCRIPT="/opt/scripts/notifymyandroid/nma.sh"
 
 # Constants used within the script.
 PAD_CHARACTER="." # What type of character do you want to use to pad output?
@@ -80,11 +78,6 @@ do
 			display_help
 			exit 2
 			;;
-		-n | --usenma )
-			USE_NMA=true
-			shift
-			echo "Using NMA to send notifications."
-			;;
 		* )
 			VERBOSE=false
 			shift
@@ -109,32 +102,7 @@ else
 	)
 fi
 
-# Read in your Notify My Android key from the nmakey file.
-# Notify My Android Script located here: http://www.notifymyandroid.com/dev.jsp
-
-if [ -f "${MY_PATH}/nmakey" ]; then
-	print_and_log "${SCRIPT_NAME}: nma key found at ${MY_PATH}/nmakey."
-	NMA_KEY=$(head -n 1 "${MY_PATH}/nmakey")
-elif [ -f "${SCRIPT_HOME}/nmakey" ]; then
-	print_and_log "${SCRIPT_NAME}: nma key found at ${SCRIPT_HOME}/nmakey."
-	NMA_KEY=$(head -n 1 "${SCRIPT_HOME}/nmakey")
-else
-	print_and_log "${SCRIPT_NAME}: No nma key found. Not using nma."
-	NMA_KEY=""
-	USE_NMA=false
-fi
-
 print_and_log "${INTROMESSAGE}"
-
-# Do we want to use nma?
-if [ "${USE_NMA}" = true ] ; then
-	if [ -f "${NMA_SCRIPT}" ]; then
-		USE_NMA=true
-	else
-		print_and_log  "${SCRIPT_NAME}: No NMA key found, and option to send notifications is enabled. Not sending a notification."
-		USE_NMA=false
-	fi
-fi
 
 for index in "${!SERVICES[@]}"; do
 	TEXT_LENGTH=${#SERVICES[index]}
@@ -149,14 +117,6 @@ for index in "${!SERVICES[@]}"; do
 		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
 		printf " [ $RED%b$NC ]\n" "FAIL"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is NOT running." "alert"
-
-		if [ "${USE_NMA}" = true ] ; then
-			NMA_CMD="\"MediaServers\" ${SERVICES[index]} \"${SERVICES[index]} is not running.\""
-			# For some reason the script errors out if I put all of that on one line.
-			print_and_log "${SCRIPT_NAME}: Calling NMA: ${NMA_CMD}" "debug"
-			# NMA script errors out if I pass NMA_CMD to it.
-			/opt/scripts/notifymyandroid/nma.sh "MediaServers" "${SERVICES[index]}" "${SERVICES[index]} is not running."
-		fi
 	fi
 
 done
