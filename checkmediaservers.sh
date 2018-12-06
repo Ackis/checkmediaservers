@@ -3,16 +3,17 @@
 
 # These are the only variables you should need to change to customize your script
 INTROMESSAGE="Checking run state of media/game servers."
-SCRIPT_HOME="/opt/scripts/mediaservers"
+CONFIG_DIR="/home/jpasula/.config/mediaservers"
+CONFIG_FILE="${CONFIG_DIR}/config"
+#SCRIPT_NAME="checkmediaservers"
+SCRIPT_NAME="$0"
 
 # Constants used within the script.
-PAD_CHARACTER="." # What type of character do you want to use to pad output?
+# What type of character do you want to use to pad output?
+PAD_CHARACTER="."
+# How much padding do you want?
 PAD_LENGTH=60 # How much padding do you want?
-
-pad=$(printf "%0.1s" "${PAD_CHARACTER}"{1..60})
-SCRIPT_NAME="$0"
-MY_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
+PAD=$(printf "%0.1s" "${PAD_CHARACTER}"{1..60})
 
 # Colours to use in the script
 BLK='\033[0;30m' # Black
@@ -27,12 +28,10 @@ NC="\\033[0m" # No Colour
 
 # Display extra logging info
 VERBOSE=false
-USE_NMA=false
 LOG=true
 
 function display_help() {
 	echo "Help WIP"
-	echo "-n|--usenma:		Use NMA to send notifications (NYI)"
 	echo "-v|--verbose:		Verbose mode"
 	echo "-h|--help:		Display help"
 }
@@ -110,11 +109,11 @@ for index in "${!SERVICES[@]}"; do
 	#systemctl status $1 | awk 'NR==3' | awk '{print $2}'
 	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
 	then
-		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
+		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$PAD"
 		printf " [ $GRN%b$NC ]\n" "PASS"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is running." "info"
 	else
-		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$pad"
+		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$PAD"
 		printf " [ $RED%b$NC ]\n" "FAIL"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is NOT running." "alert"
 	fi
