@@ -5,6 +5,7 @@
 INTROMESSAGE="Checking run state of media/game servers."
 CONFIG_DIR="/home/jpasula/.config/mediaservers"
 CONFIG_FILE="${CONFIG_DIR}/config"
+SERVICES_FILE="${CONFIG_DIR}/services"
 #SCRIPT_NAME="checkmediaservers"
 SCRIPT_NAME="$0"
 
@@ -88,9 +89,9 @@ done
 # Then check the default directory for the file.
 # If we haven't found it, just check for nginx.
 
-if [ -f "${MY_PATH}/services" ]; then
-	print_and_log "${SCRIPT_NAME}: services file found at ${MY_PATH}/services." "debug"
-        readarray -t SERVICES < "${MY_PATH}/services"
+if [ -f "${SERVICES_FILE}" ]; then
+	print_and_log "${SCRIPT_NAME}: services file found at ${SERVICES_FILE}." "debug"
+        readarray -t SERVICES < "${SERVICES_FILE}"
 elif [ -f "${SCRIPT_HOME}/services" ]; then
 	print_and_log "${SCRIPT_NAME}: services file found at ${SCRIPT_HOME}/services." "debug"
         readarray -t SERVICES < "${SCRIPT_HOME}/services"
