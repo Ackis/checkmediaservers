@@ -53,9 +53,9 @@ function print_and_log() {
 	if [ "${LOG}" = true ] ; then
 		# Were we passed a second argmument?
 		if [ ! -z "${2}" ] ; then
-			logger -t MediaServers -p "syslog.${2}" "${1}"
+			logger -t "${SCRIPT_PATH}${SCRIPT_COMMAND}" -p "syslog.${2}" "${1}"
 		else
-			logger -t MediaServers -p syslog.debug "$1"
+			logger -t "${SCRIPT_PATH}${SCRIPT_COMMAND}" -p syslog.debug "$1"
 		fi
 	fi
 }
