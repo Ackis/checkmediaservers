@@ -105,7 +105,7 @@ for index in "${!SERVICES[@]}"; do
 	TEXT_LENGTH=${#SERVICES[index]}
 	printf "%s " "${SERVICES[index]}"
 	#systemctl status $1 | awk 'NR==3' | awk '{print $2}'
-	if (( $(ps -ef | grep -v grep | grep -c "${SERVICES[index]}") > 0 ))
+	if (( $(ps -ef | grep -v grep | grep -c -i "${SERVICES[index]}") > 0 ))
 	then
 		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$PAD"
 		printf " [ $GRN%b$NC ]\n" "PASS"
