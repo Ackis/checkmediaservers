@@ -99,6 +99,10 @@ else
 	)
 fi
 
+# Sort the array
+IFS=$'\n' SERVICES=($(sort <<<"${SERVICES[*]}"))
+unset IFS
+
 print_and_log "${INTROMESSAGE}"
 
 for index in "${!SERVICES[@]}"; do
