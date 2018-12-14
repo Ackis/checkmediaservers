@@ -120,6 +120,11 @@ for index in "${!SERVICES[@]}"; do
 		printf "${YEL}%*.*s${NC}" 0 $((PAD_LENGTH - TEXT_LENGTH - 4)) "$PAD"
 		printf " [ $RED%b$NC ]\n" "FAIL"
 		print_and_log "${SCRIPT_NAME}: ${SERVICES[index]} is NOT running." "alert"
+		if [ "${NOTIFY}" = true ] ; then
+			if [ -f "${NOTIFICATION_SCRIPT}" ]; then
+				"${NOTIFICATION_SCRIPT}" "Warning - ${SERVICES[index]} not warning" "This is a warning to let you know that ${SERVICES[index]} is currently not running."
+			fi
+		fi
 	fi
 
 done
