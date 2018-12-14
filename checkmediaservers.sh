@@ -5,6 +5,7 @@ INTROMESSAGE="Checking run state of media/game servers."
 CONFIG_DIR="/home/jpasula/.config/mediaservers"
 SERVICES_FILE="${CONFIG_DIR}/services"
 SCRIPT_NAME="checkmediaservers"
+NOTIFICATION_SCRIPT="/opt/scripts/misc/pushbullet.sh"
 
 # Constants used within the script.
 # What type of character do you want to use to pad output?
@@ -27,6 +28,7 @@ NC="\\033[0m" # No Colour
 # Display extra logging info
 VERBOSE=false
 LOG=true
+NOTIFY=true
 
 function display_help() {
 	echo "Help WIP"
